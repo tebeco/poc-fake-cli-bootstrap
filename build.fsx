@@ -15,6 +15,12 @@ open Fake.DotNet
 // *** Define Targets ***
 Target.create "Clean" (fun _ ->
   Trace.log " --- Cleaning stuff --- "
+
+  let setDotNetOptions defaultDtNetOptions : DotNet.Options =
+    defaultDtNetOptions
+
+  DotNet.exec setDotNetOptions "clean" ""
+  |> printfn "===============================================================\n%A\n"
 )
 
 Target.create "Build" (fun _ ->
