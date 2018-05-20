@@ -1,6 +1,5 @@
 #r "paket: 
 nuget FSharp.Core prerelease
-nuget FSharp.Collections.ParallelSeq
 nuget Fake.Core.Target prerelease
 nuget Fake.IO.FileSystem prerelease
 nuget Fake.DotNet.Cli prerelease
@@ -9,7 +8,6 @@ nuget Fake.DotNet.Cli prerelease
 #load "./.fake/build.fsx/intellisense.fsx"
 
 open System.IO
-open FSharp.Collections.ParallelSeq
 open Fake.Core
 open Fake.IO.Globbing.Operators
 open Fake.DotNet
@@ -33,10 +31,10 @@ Target.create "Test" (fun _ ->
     fun (dotNetOptions:DotNet.Options) -> { dotNetOptions with WorkingDirectory = projectDirectory}
 
   !!("test/**/*.Tests.csproj")
-  |> PSeq.map Path.GetDirectoryName
-  |> PSeq.map (fun projectDirectory -> DotNet.exec (setDotNetOptions projectDirectory) "xunit" "")
-  |> printfn "===============================================================\n%A"
-   
+  |> Seq.toArray
+  |> Array.Parallel.map Path.GetDirectoryName
+  |> Array.Parallel.map (fun projectDirectory -> DotNet.exec (setDotNetOptions projectDirectory) "xunit" "")
+  |> Array.Parallel.iter (fun cliResults -> printfn "===============================================================\n%A\n" cliResults)
 )
 
 Target.create "Publish" (fun _ ->
